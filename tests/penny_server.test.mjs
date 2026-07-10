@@ -436,6 +436,65 @@ test("Penny runtime actions can be enabled for an approved tailnet user", async 
   );
 });
 
+test("shared model responses never consult the local writing runtime", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "penny-shared-model-"));
+  await fs.mkdir(path.join(repoRoot, "scripts"), { recursive: true });
+  const marker = path.join(repoRoot, "runtime-was-called");
+  const fakeRuntime = path.join(repoRoot, "scripts", "writing-runtime.sh");
+  const credentialFile = path.join(repoRoot, "queue-token");
+  await fs.writeFile(credentialFile, "secret\n", { mode: 0o600 });
+  await fs.writeFile(fakeRuntime, `#!/usr/bin/env bash\ntouch ${JSON.stringify(marker)}\n`, "utf8");
+  await fs.chmod(fakeRuntime, 0o755);
+
+  await withServer(async (baseUrl) => {
+    const response = await requestJson(baseUrl, "/api/penny/respond", {
+      method: "POST",
+      body: JSON.stringify({
+        modeId: "revise_clarity",
+        draft: "Draft.",
+        instruction: "Revise.",
+      }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.body.ok, true);
+    await assert.rejects(fs.access(marker));
+  }, {
+    repoRoot,
+    modelMode: "shared",
+    modelBaseUrl: "http://127.0.0.1:8092/v1",
+    modelCredentialFile: credentialFile,
+    modelFetch: async () => ({
+      ok: true,
+      json: async () => ({
+        model: "gemma-runtime",
+        choices: [{ message: { content: "Revised." } }],
+      }),
+    }),
+  });
+});
+
+test("shared mode rejects local runtime status and actions", async () => {
+  await withServer(async (baseUrl) => {
+    const status = await requestJson(baseUrl, "/api/runtime/status");
+    assert.equal(status.status, 409);
+    const action = await requestJson(baseUrl, "/api/runtime/action", {
+      method: "POST",
+      body: JSON.stringify({ action: "start_daily" }),
+    });
+    assert.equal(action.status, 409);
+  }, {
+    modelMode: "shared",
+    modelBaseUrl: "http://127.0.0.1:8092/v1",
+    modelCredentialFile: "/private/token",
+  });
+});
+
+test("server startup rejects invalid model client configuration", () => {
+  assert.throws(() => createServer({ modelMode: "remote-ish" }), /local or shared/i);
+  assert.throws(() => createServer({ modelMode: "shared", modelCredentialFile: "relative" }), /absolute path/i);
+  assert.throws(() => createServer({ modelMode: "local", modelTimeoutMs: "0" }), /positive integer/i);
+});
+
 test("Penny static shell sets the local API token cookie", async () => {
   const staticDir = await fs.mkdtemp(path.join(os.tmpdir(), "penny-static-"));
   await fs.writeFile(path.join(staticDir, "index.html"), "<!doctype html><title>Penny</title>", "utf8");

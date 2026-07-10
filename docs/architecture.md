@@ -28,3 +28,21 @@ with mode `0600`.
 Voice packs are untrusted local configuration. They are JSON, schema-validated,
 and cannot supply regular expressions, JavaScript, commands, or remote URLs.
 
+## Model connection modes
+
+Local mode uses the loopback MLX-compatible endpoint and may consult the
+allowlisted local runtime adapter. Shared mode is a separate, explicit posture:
+
+- the configured URL must still be plain HTTP on loopback;
+- an external tunnel provides transport to the remote host;
+- Penny reads a bearer token from an absolute local file path;
+- requests use the stable `penny-writing` alias;
+- local runtime status and actions are not consulted; and
+- responses report both the requested alias and the model identifier returned
+  by the service.
+
+The shared queue remains responsible for admission, serialization, and model
+selection. Penny treats `429` as queue pressure, `503` as service unavailability,
+an abort as a wait timeout, other non-success responses as generation failures,
+and failed fetches as connection failures. It never retries a generation
+automatically because an ambiguous retry could produce duplicate work.

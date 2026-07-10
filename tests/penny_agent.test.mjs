@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 
 import {
@@ -6,6 +9,7 @@ import {
   buildChatCompletionPayload,
   cleanPennyText,
   parseInlineAnnotations,
+  resolveModelClientConfig,
 } from "../server/penny_agent.mjs";
 import {
   buildPennyMessages,
@@ -414,6 +418,127 @@ test("Penny model endpoint must remain loopback", () => {
     () => assertLoopbackModelBaseUrl("https://example.com/v1"),
     /loopback/,
   );
+});
+
+test("shared model mode uses the stable alias and a credential file", async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "penny-config-token-"));
+  const tokenFile = path.join(directory, "queue-token");
+  await fs.writeFile(tokenFile, "queue-secret\n", { mode: 0o600 });
+  const config = resolveModelClientConfig({
+    modelMode: "shared",
+    modelBaseUrl: "http://127.0.0.1:8092/v1",
+    credentialFile: tokenFile,
+  });
+  assert.equal(config.model, "penny-writing");
+  assert.equal(config.timeoutMs, 420000);
+  assert.equal(await config.authorization(), "Bearer queue-secret");
+  assert.throws(
+    () => resolveModelClientConfig({ modelMode: "shared", credential: "inline-secret" }),
+    /credential file/i,
+  );
+  assert.throws(
+    () => resolveModelClientConfig({ modelMode: "shared", credentialFile: "relative-token" }),
+    /absolute path/i,
+  );
+});
+
+test("shared model credentials are opened without following symlinks and require owner 0600", async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "penny-credential-"));
+  const credential = path.join(directory, "queue-token");
+  const symlink = path.join(directory, "queue-token-link");
+  await fs.writeFile(credential, "secret\n", { mode: 0o600 });
+  const secure = resolveModelClientConfig({ modelMode: "shared", credentialFile: credential });
+  assert.equal(await secure.authorization(), "Bearer secret");
+
+  await fs.chmod(credential, 0o640);
+  await assert.rejects(secure.authorization(), /credential file is unavailable or unsafe/i);
+  await fs.chmod(credential, 0o600);
+  await fs.symlink(credential, symlink);
+  const linked = resolveModelClientConfig({ modelMode: "shared", credentialFile: symlink });
+  await assert.rejects(linked.authorization(), /credential file is unavailable or unsafe/i);
+});
+
+test("model timeout rejects zero and non-finite values", () => {
+  for (const timeoutMs of [0, Infinity, -1, Number.NaN]) {
+    assert.throws(
+      () => resolveModelClientConfig({ modelMode: "local", timeoutMs }),
+      /positive integer/i,
+    );
+  }
+});
+
+test("shared model requests authenticate and report the model actually used", async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "penny-request-token-"));
+  const tokenFile = path.join(directory, "queue-token");
+  await fs.writeFile(tokenFile, "secret-token\n", { mode: 0o600 });
+  let captured;
+  const result = await askPenny(
+    { modeId: "revise_clarity", draft: "Draft.", instruction: "Revise." },
+    {
+      modelMode: "shared",
+      modelBaseUrl: "http://127.0.0.1:8092/v1",
+      credentialFile: tokenFile,
+      fetchImpl: async (_url, options) => {
+        captured = options;
+        return {
+          ok: true,
+          json: async () => ({
+            model: "gemma-runtime-26b",
+            choices: [{ message: { content: "Revised draft." } }],
+            usage: { prompt_tokens: 2, completion_tokens: 3 },
+          }),
+        };
+      },
+    },
+  );
+
+  assert.equal(JSON.parse(captured.body).model, "penny-writing");
+  assert.equal(captured.headers.authorization, "Bearer secret-token");
+  assert.equal(result.requestedModel, "penny-writing");
+  assert.equal(result.actualModel, "gemma-runtime-26b");
+});
+
+test("shared model failures distinguish queue, service, wait, generation, and connection errors", async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "penny-failure-token-"));
+  const tokenFile = path.join(directory, "queue-token");
+  await fs.writeFile(tokenFile, "secret\n", { mode: 0o600 });
+  const request = { modeId: "revise_clarity", draft: "Draft.", instruction: "Revise." };
+  const shared = {
+    modelMode: "shared",
+    credentialFile: tokenFile,
+  };
+  const statusResult = async (status) => askPenny(request, {
+    ...shared,
+    fetchImpl: async () => ({ ok: false, status }),
+  });
+
+  assert.equal((await statusResult(429)).errorKind, "queue_wait");
+  assert.equal((await statusResult(503)).errorKind, "service_unavailable");
+  assert.equal((await statusResult(500)).errorKind, "generation");
+  assert.equal((await askPenny(request, {
+    ...shared,
+    fetchImpl: async () => ({
+      ok: false,
+      status: 504,
+      json: async () => ({ error: "queue_wait_timeout" }),
+    }),
+  })).errorKind, "wait_timeout");
+  assert.equal((await askPenny(request, {
+    ...shared,
+    fetchImpl: async () => ({
+      ok: false,
+      status: 504,
+      json: async () => ({ error: "generation_timeout" }),
+    }),
+  })).errorKind, "generation");
+  assert.equal((await askPenny(request, {
+    ...shared,
+    fetchImpl: async () => { throw Object.assign(new Error("timed out"), { name: "TimeoutError" }); },
+  })).errorKind, "wait_timeout");
+  assert.equal((await askPenny(request, {
+    ...shared,
+    fetchImpl: async () => { throw new TypeError("fetch failed"); },
+  })).errorKind, "connection");
 });
 
 test("Penny workspace storage is under ignored runtime directory", () => {

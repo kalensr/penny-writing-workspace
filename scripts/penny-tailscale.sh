@@ -11,6 +11,7 @@ DRY_RUN="${PENNY_TAILSCALE_DRY_RUN:-0}"
 OVERRIDE_HOST="${PENNY_TAILSCALE_HOST:-}"
 OVERRIDE_USERS="${PENNY_TAILSCALE_USERS:-}"
 SERVE_PATH="${PENNY_TAILSCALE_PATH:-}"
+REMOTE_RUNTIME_CONTROL_SET="${PENNY_ALLOW_REMOTE_RUNTIME_CONTROL+x}"
 
 usage() {
   cat <<USAGE
@@ -27,6 +28,11 @@ Environment:
   PENNY_TAILSCALE_CONFIG_JSON=...  Override Serve config JSON, mainly for tests.
   PENNY_TAILSCALE_STATUS_JSON=...  Override Tailscale status JSON, mainly for tests.
   TAILSCALE_BIN=...          Override tailscale CLI path.
+
+Tailscale maintenance changes only the network settings named by this script.
+Other Penny launchd settings are preserved by penny-server.sh. Passing a
+supported variable with an empty value is an explicit clear; `off` explicitly
+clears only allowed hosts, trusted users, and the Penny base path.
 USAGE
 }
 
@@ -197,10 +203,13 @@ cmd_on() {
     serve_args+=(--set-path="$path")
   fi
   serve_args+=("$TARGET")
-  server_env=()
+  # Tailscale Serve owns the external prefix and forwards to Penny's root.
+  # Clear any stale application base path explicitly; all private model and
+  # workspace settings remain unspecified and are merged by penny-server.sh.
+  server_env=("PENNY_BASE_PATH=")
   server_env+=("PENNY_ALLOWED_HOSTS=$host")
   server_env+=("PENNY_TAILSCALE_USERS=$users")
-  if [[ -n "$remote_runtime_control" ]]; then
+  if [[ "$REMOTE_RUNTIME_CONTROL_SET" == "x" ]]; then
     server_env+=("PENNY_ALLOW_REMOTE_RUNTIME_CONTROL=$remote_runtime_control")
   fi
   if [[ "$DRY_RUN" == "1" ]]; then

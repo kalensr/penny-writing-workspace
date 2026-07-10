@@ -47,6 +47,34 @@ PENNY_MODEL_BASE_URL=http://127.0.0.1:9000/v1 npm run server
 
 Penny rejects non-loopback model URLs.
 
+### Optional shared model
+
+Penny can use a shared OpenAI-compatible service through a loopback tunnel.
+Shared mode always requests the stable `penny-writing` model alias, never starts
+or inspects a local model runtime, and reads its bearer token from a file. It
+does not accept an inline credential.
+
+```sh
+PENNY_MODEL_MODE=shared \
+PENNY_MODEL_BASE_URL=http://127.0.0.1:8092/v1 \
+PENNY_MODEL_CREDENTIAL_FILE=/private/path/penny-queue-token \
+PENNY_MODEL_TIMEOUT_MS=420000 \
+npm run server
+```
+
+Keep the credential file outside the repository with owner-only permissions.
+The 420-second timeout accommodates a bounded, serialized generation queue; it
+does not make Penny retry failed generations automatically. Penny distinguishes
+queue-full, service-unavailable, wait-timeout, generation, configuration, and
+connection failures so the writer can choose a safe next action.
+
+`scripts/penny-server.sh on`, `restart`, and `plist` preserve settings that are
+not named in the current command, using the loaded launchd environment first
+and the existing plist second. Set a supported variable to an empty string to
+clear it explicitly. Tailscale maintenance changes only its host, user, and
+path settings; it does not clear shared-model credentials, runtime ownership,
+workspace state, or private voice-pack configuration.
+
 ## Voice Packs
 
 The built-in pack is in `voice-packs/default/voice-pack.json`. Load additional
@@ -64,6 +92,8 @@ See [Voice packs](docs/voice-packs.md).
 
 Set `PENNY_RUNTIME_SCRIPT` to an executable that accepts Penny's allowlisted
 runtime actions. Runtime controls remain unavailable when no adapter is set.
+They are disabled whenever `PENNY_MODEL_MODE=shared` so shared Penny cannot
+silently fall back to or manipulate a host-local writing model.
 
 ```sh
 PENNY_RUNTIME_SCRIPT=/opt/penny-runtime/writing-runtime.sh npm run server

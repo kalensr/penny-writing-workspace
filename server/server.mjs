@@ -11,7 +11,7 @@ import {
   listPennyModes,
   listStyleProfiles,
 } from "./domain.mjs";
-import { askPenny } from "./penny_agent.mjs";
+import { askPenny, resolveModelClientConfig } from "./penny_agent.mjs";
 import { parseRuntimeStatusModel, runWritingRuntime } from "./runtime_adapter.mjs";
 import { readWorkspace, writeWorkspace } from "./storage.mjs";
 import { analyzeVoice, configureVoiceAnalysis } from "./voice_rules.mjs";
@@ -286,7 +286,7 @@ async function handleApi(
   request,
   response,
   pathname,
-  { apiToken, repoRoot, stateDir, allowedHosts, allowedTailscaleUsers, allowRemoteRuntimeControl, voicePackConfig },
+  { apiToken, repoRoot, stateDir, allowedHosts, allowedTailscaleUsers, allowRemoteRuntimeControl, voicePackConfig, modelOptions },
 ) {
   const validation = validateApiRequest(request, apiToken, allowedHosts, allowedTailscaleUsers);
   if (!validation.ok) {
@@ -307,12 +307,20 @@ async function handleApi(
   }
 
   if (request.method === "GET" && pathname === "/api/runtime/status") {
+    if (modelOptions.modelMode === "shared") {
+      sendJson(response, 409, { ok: false, error: "Local runtime control is disabled in shared model mode." });
+      return;
+    }
     const result = await runWritingRuntime(repoRoot, { action: "status" });
     sendJson(response, result.ok ? 200 : 502, result);
     return;
   }
 
   if (request.method === "POST" && pathname === "/api/runtime/action") {
+    if (modelOptions.modelMode === "shared") {
+      sendJson(response, 409, { ok: false, error: "Local runtime control is disabled in shared model mode." });
+      return;
+    }
     if (tailnetRequestHost(request.headers.host || "", allowedHosts) && !allowRemoteRuntimeControl) {
       sendJson(response, 403, { ok: false, error: "Penny runtime actions are local-only by default." });
       return;
@@ -336,9 +344,12 @@ async function handleApi(
 
   if (request.method === "POST" && pathname === "/api/penny/respond") {
     const body = await readJsonBody(request);
-    const runtimeStatus = await runWritingRuntime(repoRoot, { action: "status" });
-    const activeModel = parseRuntimeStatusModel(runtimeStatus);
-    const result = await askPenny({ ...body, model: body.model || activeModel });
+    let activeModel = null;
+    if (modelOptions.modelMode !== "shared") {
+      const runtimeStatus = await runWritingRuntime(repoRoot, { action: "status" });
+      activeModel = parseRuntimeStatusModel(runtimeStatus);
+    }
+    const result = await askPenny({ ...body, model: body.model || activeModel }, modelOptions);
     sendJson(response, 200, result);
     return;
   }
@@ -374,6 +385,11 @@ export function createServer({
   basePath = "",
   allowRemoteRuntimeControl = false,
   voicePackDir = process.env.PENNY_VOICE_PACK_DIR || "",
+  modelMode = process.env.PENNY_MODEL_MODE || "local",
+  modelBaseUrl = process.env.PENNY_MODEL_BASE_URL || "http://127.0.0.1:8091/v1",
+  modelCredentialFile = process.env.PENNY_MODEL_CREDENTIAL_FILE || "",
+  modelTimeoutMs = process.env.PENNY_MODEL_TIMEOUT_MS || "",
+  modelFetch,
 } = {}) {
   const voicePackConfig = loadVoicePackConfiguration({ packDir: voicePackDir });
   configureStyleProfiles(voicePackConfig.profiles, voicePackConfig.defaultProfileId);
@@ -381,6 +397,17 @@ export function createServer({
   const normalizedAllowedHosts = parseAllowedHosts(allowedHosts);
   const normalizedAllowedTailscaleUsers = parseAllowedTailscaleUsers(allowedTailscaleUsers);
   const normalizedBasePath = normalizeBasePath(basePath);
+  const clientConfig = resolveModelClientConfig({
+    modelMode: String(modelMode).trim().toLowerCase(),
+    modelBaseUrl,
+    credentialFile: modelCredentialFile,
+    timeoutMs: modelTimeoutMs,
+  });
+  const modelOptions = {
+    modelMode: clientConfig.modelMode,
+    clientConfig,
+    ...(modelFetch ? { fetchImpl: modelFetch } : {}),
+  };
   return http.createServer(async (request, response) => {
     try {
       const url = new URL(request.url, `http://${HOST}`);
@@ -407,6 +434,7 @@ export function createServer({
           allowedTailscaleUsers: normalizedAllowedTailscaleUsers,
           allowRemoteRuntimeControl,
           voicePackConfig,
+          modelOptions,
         });
       } else {
         await serveStatic(
