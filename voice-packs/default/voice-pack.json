@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "packId": "penny-default",
+  "name": "Penny default",
+  "description": "Generic built-in writing profiles for a self-contained Penny installation.",
+  "defaultProfileId": "reflective",
+  "profiles": [
+    {
+      "id": "reflective",
+      "label": "Reflective",
+      "description": "Lived context, visible tension, reflection, principle, and action.",
+      "defaultVoiceMode": "reflective",
+      "outputPolicy": "plain_text",
+      "capabilities": [],
+      "lockedRules": [
+        "Preserve the writer's point of view and uncertainty when they matter.",
+        "Keep the source tension visible before resolving it.",
+        "Move from insight to a practical next step.",
+        "Keep people, teams, decisions, and workflows as the subject when they are doing the work."
+      ]
+    },
+    {
+      "id": "executive",
+      "label": "Executive",
+      "description": "Direct decision writing with context, tradeoffs, and next action.",
+      "defaultVoiceMode": "executive",
+      "outputPolicy": "plain_text",
+      "capabilities": ["positioning_context"],
+      "lockedRules": [
+        "Lead with the recommendation or practical point.",
+        "Name the context, risk, tradeoff, owner, and next action.",
+        "Use concrete nouns and active verbs.",
+        "Avoid short dramatic lines that do not state a fact, decision, or boundary."
+      ]
+    },
+    {
+      "id": "raw-journal",
+      "label": "Raw journal",
+      "description": "Preserve unfinished thinking, questions, fragments, and task markers.",
+      "defaultVoiceMode": "raw_journal",
+      "outputPolicy": "journal_markdown",
+      "capabilities": [],
+      "lockedRules": [
+        "Do not over-polish live thought.",
+        "Preserve uncertainty, questions, fragments, and emotional reality.",
+        "Protect the writer's unfinished thinking.",
+        "Do not force polished rhythm rules onto raw notes."
+      ]
+    }
+  ],
+  "analysis": {
+    "vocabularyMarkers": ["decision", "strategy", "purpose", "work", "people", "team", "customer", "action", "next step"],
+    "stanceMarkers": ["i think", "i believe", "i wonder", "i'm not sure", "i need", "i want", "the question"],
+    "preservationMarkers": [],
+    "slotMarkers": {
+      "lived_moment": ["i was", "i remember", "when i", "i felt", "this started"],
+      "tension": ["pressure", "uncertain", "i'm not sure", "i wonder", "question", "friction", "risk"],
+      "reflection": ["i think", "i believe", "i keep", "reflect", "the question"],
+      "principle": ["principle", "the key", "the point", "this means", "the work is"],
+      "action": ["next step", "i need to", "i will", "plan", "decide", "practice", "work"],
+      "service_horizon": ["team", "customer", "organization", "community", "serve", "others", "mission"]
+    },
+    "requiredSlotsByMode": {
+      "raw_journal": ["tension", "reflection", "action"],
+      "executive": ["principle", "action"],
+      "reflective": ["lived_moment", "tension", "reflection", "principle", "action", "service_horizon"]
+    },
+    "thresholds": {
+      "vocabularyMinimum": 2,
+      "stanceMinimum": 1,
+      "cadenceSentenceMinimum": 6,
+      "cadenceStdDevMinimum": 4
+    }
+  }
+}

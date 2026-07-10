@@ -1,0 +1,31 @@
+{
+  "name": "penny-writing-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/penny_agent.test.mjs tests/penny_workspace.test.mjs tests/penny_voice_rules.test.mjs tests/penny_voice_pack.test.mjs tests/penny_house_style_parity.test.mjs tests/penny_house_style_update.test.mjs tests/penny_server.test.mjs tests/penny_api_client.test.mjs tests/penny_vite_config.test.mjs",
+    "test:house-style-parity": "node --test tests/penny_house_style_parity.test.mjs",
+    "update:house-style-parity": "node scripts/update-house-style-parity.mjs",
+    "build": "vite build --config app/vite.config.js",
+    "browser-smoke": "node scripts/penny_browser_smoke.mjs",
+    "screenshots": "node scripts/capture-public-screenshots.mjs",
+    "preview": "vite --host 127.0.0.1 --config app/vite.config.js",
+    "server": "node server/server.mjs",
+    "validate": "scripts/validate.sh",
+    "runtime-preflight": "scripts/penny-runtime-preflight.sh"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright-core": "^1.61.1",
+    "vite": "^6.0.7"
+  }
+}

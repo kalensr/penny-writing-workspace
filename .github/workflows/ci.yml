@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: python3 -m unittest tests.test_penny_tailscale tests.test_penny_parity_smoke -v
+      - run: npm run build
+      - run: npm run browser-smoke
+      - run: npm audit --audit-level=high
+      - run: scripts/check-public-tree.sh

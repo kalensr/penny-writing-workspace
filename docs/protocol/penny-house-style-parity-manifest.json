@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "sourceRepo": "house-style-system",
+  "sourceCommit": "856b4a7acf241e3b6dc8312f5f92bde3816e4e0b",
+  "sourceRootHint": "../house-style-system or HOUSE_STYLE_SYSTEM_DIR",
+  "description": "Executable parity contract between canonical House Style System fixtures and Penny's deterministic style engine.",
+  "cases": [
+    {
+      "canonicalRuleId": "HouseStyle.NoEmDash",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-em-dash.md",
+      "pennyLayer": "HouseStyle",
+      "pennyRuleId": "HST-DASH-001",
+      "sha256": "bd769d9a605a9552b525c2765e4a7fb2adc1b54641689897eab6d4923637dd49",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "HouseStyle.ContrastFormula",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-contrast-formula.md",
+      "pennyLayer": "HouseStyle",
+      "pennyRuleId": "HST-CONTRAST-001",
+      "sha256": "c9cf53b3bcc509219d4b8fa3946ae8290d3c6ac6509fe71d8a6df122351cac60",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "HouseStyle.StockConclusions",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-stock-conclusion.md",
+      "pennyLayer": "HouseStyle",
+      "pennyRuleId": "HST-STOCK-001",
+      "sha256": "157523b1ddbaf6f8b734a24fc0700dce837119e25b743e57a619473f23700c65",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "AIVoice.AbstractBusinessNeed",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-abstract-business-need.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-ABSTRACT-NEED-001",
+      "sha256": "745332ce1d8fa6474b91ae25f918a2448aae3bb1479f95cbb29347bb6d769cf8",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.RoleFitFraming",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-role-fit-framing.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-ROLE-FIT-001",
+      "sha256": "9f37dbe4d7fbb10d1847b5de95615ecec02c70ab5faf9a15887c9c5252c1fda3",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.PatternRecognitionOpening",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-pattern-recognition-opening.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-PATTERN-001",
+      "sha256": "256cf94ee20cea770566b0cebe31633e42d97cda2021ed9eac611314d9837df4",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.DiagnosticAdjectiveStack",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-diagnostic-adjective-stack.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-BEFORE-STATE-001",
+      "sha256": "e40a041fad008e94b42be3373a65f5909b662251a37a6ff686dbb47c9e03f9bb",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.VagueConsequence",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-vague-consequence.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-CONSEQUENCE-001",
+      "sha256": "ff2d5f53f59c425dc2d8a5442078e70c3c929afdf3c741908d4a434b64be1248",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.CoordinatedAbstraction",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-coordinated-abstraction.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-ABSTRACTION-001",
+      "sha256": "61ed55244c3567980b8027c3bca42cf28dda5344f3ede801ce4f22bd7f043164",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "AIVoice.EmptyWorkNouns",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-ai-empty-work-noun.md",
+      "pennyLayer": "AIVoice",
+      "pennyRuleId": "AIV-WORK-NOUN-001",
+      "sha256": "55f13e0bf95f84df0b73a3e82f5a10fe46d404114809d809688e44fe68d32a93",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "writingType": "personal positioning",
+      "styleProfileId": "executive"
+    },
+    {
+      "canonicalRuleId": "CenterOfGravity.ToolProtagonist",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-cog-ai-protagonist.md",
+      "pennyLayer": "CenterOfGravity",
+      "pennyRuleId": "CenterOfGravity.ToolProtagonist",
+      "sha256": "27498f8e75cabd962e04352c0e5ea746ee8d087866b65f5f5d4a922977360b9e",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "CenterOfGravity.EmptyWorkSubject",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-cog-empty-work-subject.md",
+      "pennyLayer": "CenterOfGravity",
+      "pennyRuleId": "CenterOfGravity.EmptyWorkSubject",
+      "sha256": "0ac24190a566a7ab590a3dcda1972375357052ed8508df99f336b422e82d71a2",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "CenterOfGravity.NominalizedHumanAction",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-cog-nominalized-human-action.md",
+      "pennyLayer": "CenterOfGravity",
+      "pennyRuleId": "CenterOfGravity.NominalizedHumanAction",
+      "sha256": "5c185f2521d8adb136b986f23234df9065e9b156029b710c54e13bb898b1477a",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory"
+    },
+    {
+      "canonicalRuleId": "DramaticPunctuation.VaguePunchline",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-dp-vague-punchline.md",
+      "pennyLayer": "DramaticPunctuation",
+      "pennyRuleId": "DramaticPunctuation.VaguePunchline",
+      "sha256": "7c7bdd79cc776b2ba36999c4f5f91ac2a6186003b319b9a1701f29cf85b7c2b7",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "profileExceptions": ["raw-journal"]
+    },
+    {
+      "canonicalRuleId": "DramaticPunctuation.AbstractPunchline",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-dp-abstract-punchline.md",
+      "pennyLayer": "DramaticPunctuation",
+      "pennyRuleId": "DramaticPunctuation.AbstractPunchline",
+      "sha256": "6b3ac51475328bfc440c4e78ac2a664d00226990aadaded060f403015d5751bb",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "profileExceptions": ["raw-journal"]
+    },
+    {
+      "canonicalRuleId": "DramaticPunctuation.FragmentEmphasis",
+      "canonicalFixture": "docs/test-fixtures/style-gate/fail-dp-fragment-emphasis.md",
+      "pennyLayer": "DramaticPunctuation",
+      "pennyRuleId": "DramaticPunctuation.FragmentEmphasis",
+      "sha256": "5df38269ed7854feb5087f8820aa6ebd5d6a0d7734341ad92a38b44107994e7c",
+      "expectedSeverity": "minor",
+      "expectedBehavior": "advisory",
+      "profileExceptions": ["raw-journal"]
+    }
+  ]
+}
