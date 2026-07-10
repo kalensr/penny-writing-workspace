@@ -303,6 +303,23 @@ async function main() {
     });
   });
 
+  await page.route("**/api/runtime/status", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        stdout: JSON.stringify({
+          listener: true,
+          state: {
+            profile: "daily",
+            model: "mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit",
+          },
+        }),
+      }),
+    });
+  });
+
   await page.route("**/api/penny/respond", async (route) => {
     respondCalls += 1;
     const body = route.request().postDataJSON();
@@ -468,6 +485,7 @@ async function main() {
   try {
     await page.goto(`${baseUrl.replace(/\/+$/, "")}/?penny_browser_smoke=${Date.now()}`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: /Check voice/i }).waitFor({ timeout: 10000 });
+    await page.getByText("Configured model: Gemma 4 26B-A4B: daily writing").waitFor({ timeout: 10000 });
     originalWorkspace = await fetchWorkspace(page);
 
     const styleProfileSelect = page.locator('select[name="styleProfile"]');

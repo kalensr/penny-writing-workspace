@@ -114,6 +114,16 @@ summary:focus-visible {
   background: #e4f7f1;
 }
 
+.runtime-model {
+  max-width: 300px;
+  overflow: hidden;
+  color: #55605b;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .segmented {
   display: grid;
   grid-template-columns: repeat(2, minmax(72px, 1fr));
@@ -1598,9 +1608,11 @@ summary:focus-visible {
   }
 
   .runtime-pill,
-  .segmented {
+  .segmented,
+  .runtime-model {
     grid-column: 1 / -1;
     width: 100%;
+    max-width: none;
   }
 
   .project-rail,

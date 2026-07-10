@@ -1,7 +1,9 @@
 # Voice Packs
 
-Voice packs add local writing profiles without changing Penny's code. The
-public default pack is `voice-packs/default/voice-pack.json`.
+Voice packs add local writing profiles without changing Penny's code. They let
+a writer choose clear guidance for a kind of work without handing executable
+rules to a configuration file. The public default pack is
+`voice-packs/default/voice-pack.json`.
 
 ## Contract
 
@@ -32,4 +34,3 @@ If an optional directory is missing, Penny starts with built-in profiles and
 reports a warning through the config API. A saved profile ID that is not loaded
 remains in the workspace and appears as unavailable until the writer chooses a
 replacement.
-

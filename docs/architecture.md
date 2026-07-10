@@ -1,7 +1,12 @@
 # Architecture
 
-Penny keeps the application small and separates deterministic review from model
-collaboration.
+Penny keeps model assistance separate from the writer's draft. The app can
+check a draft locally, ask a loopback model for a suggestion, and show the
+result for review. Only an explicit writer action changes the document.
+
+The [Gemma 4 and MLX reference setup](gemma-mlx-reference.md) describes the
+tested two-model local deployment. Penny itself remains compatible with another
+approved OpenAI-compatible loopback endpoint.
 
 ## Components
 
@@ -14,11 +19,11 @@ collaboration.
 - `server/storage.mjs`: private local workspace persistence.
 - `server/voice_pack_*.mjs`: pack validation, loading, and registry creation.
 
-## Trust Boundaries
+## What Penny Protects
 
 The server accepts approved loopback hosts by default and checks the API token,
-origin, referer, content type, and request size. An optional tailnet host must be
-allowlisted. Remote runtime actions stay disabled by default.
+origin, referer, content type, and request size. An optional tailnet host must
+be allowlisted. Remote runtime actions stay disabled by default.
 
 Model responses do not mutate documents. Penny stores a candidate with source
 context, checks freshness before apply, and requires an explicit writer action.

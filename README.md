@@ -1,14 +1,26 @@
 # Penny Writing Workspace
 
-Penny is a local-first writing workspace for drafting, selected-text revision,
-deterministic style review, and explicit application of model suggestions. The
-browser UI, workspace server, and model traffic bind to loopback by default.
+Penny is a local writing workspace for writers who want model help without
+sending a draft to a hosted service. Select a passage or use the full draft,
+ask for a revision or critique, compare the suggestion, and decide what enters
+the document.
 
-Penny is deliberately cautious about authorship. A model response becomes a
-reviewable candidate; it cannot change the draft until the writer applies it.
-Deterministic checks are editing signals, not proof of authorship or quality.
+Penny keeps the writer in control. Model suggestions stay separate from the
+draft until the writer reviews and applies them. Its deterministic checks are
+editing signals, not a verdict on authorship or quality.
 
 ![Penny desktop workspace](docs/assets/penny-desktop.png)
+
+## A Tested Local Reference
+
+Penny works with an OpenAI-compatible model endpoint on loopback. Its tested
+reference setup runs two Gemma 4 models through MLX on Apple silicon:
+
+- **Daily:** Gemma 4 26B-A4B for drafting and routine revision.
+- **Quality:** Gemma 4 31B for a slower, more deliberate second pass.
+
+See [the Gemma 4 and MLX reference setup](docs/gemma-mlx-reference.md) for the
+Mac Studio configuration, model settings, proven installation path, and limits.
 
 ## What Penny Includes
 
@@ -37,7 +49,9 @@ npm run server
 ```
 
 Open `http://127.0.0.1:4177`. The editor and deterministic checks work without
-a model. Model-backed actions use `http://127.0.0.1:8091/v1` by default.
+a model. Model-backed actions use `http://127.0.0.1:8091/v1` by default. Start
+with the [reference setup](docs/gemma-mlx-reference.md) if you want the tested
+Gemma 4 configuration.
 
 To use another loopback endpoint:
 
@@ -130,6 +144,7 @@ already running server through `PENNY_BASE_URL`.
 ## Architecture And Security
 
 - [Architecture](docs/architecture.md)
+- [Gemma 4 and MLX reference setup](docs/gemma-mlx-reference.md)
 - [Voice packs](docs/voice-packs.md)
 - [Security policy](SECURITY.md)
 - [Contributing](CONTRIBUTING.md)

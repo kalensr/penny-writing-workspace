@@ -58,10 +58,20 @@ function safeParseRuntime(stdout) {
   }
 }
 
+const PUBLIC_RUNTIME_MODEL_LABELS = new Map([
+  ["mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit", "Gemma 4 26B-A4B: daily writing"],
+  ["mlx-community/gemma-4-31B-it-qat-OptiQ-4bit", "Gemma 4 31B: quality review"],
+]);
+
+function publicRuntimeModelLabel(model) {
+  return PUBLIC_RUNTIME_MODEL_LABELS.get(model) || null;
+}
+
 function RuntimeToolbar({ runtime, onAction, busy }) {
   const parsed = safeParseRuntime(runtime?.stdout || "");
   const profile = parsed?.state?.profile || parsed?.default_profile || "daily";
   const listener = parsed?.listener ? "online" : "offline";
+  const activeModelLabel = publicRuntimeModelLabel(parsed?.state?.model);
 
   return (
     <header className="runtime-toolbar">
@@ -77,6 +87,11 @@ function RuntimeToolbar({ runtime, onAction, busy }) {
           <Circle size={9} fill="currentColor" aria-hidden="true" />
           <span>{listener === "online" ? "Model online" : "Model offline"}</span>
         </div>
+        {activeModelLabel ? (
+          <span className="runtime-model">
+            Configured model: {activeModelLabel}
+          </span>
+        ) : null}
         <div className="segmented">
           <button className={profile === "daily" ? "active" : ""} onClick={() => onAction({ action: "swap", profile: "daily" })}>
             Daily
