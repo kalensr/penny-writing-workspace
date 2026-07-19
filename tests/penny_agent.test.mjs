@@ -316,7 +316,7 @@ test("Penny can preserve Markdown-like journal markers in raw journal mode", () 
 test("Penny chat payload targets the MLX server default model", () => {
   const payload = buildChatCompletionPayload({
     modeId: "revise_clarity",
-    model: "mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit",
+    model: "unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit",
     draft: "This needs clarity.",
     instruction: "Tighten it.",
   });
@@ -376,14 +376,14 @@ test("Penny parses the running model from writing runtime status", () => {
     stdout: JSON.stringify({
       listener: true,
       state: {
-        model: "mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit",
+        model: "unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit",
       },
     }),
   };
 
   assert.equal(
     parseRuntimeStatusModel(result),
-    "mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit",
+    "unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit",
   );
   assert.equal(parseRuntimeStatusModel({ ok: false, stdout: "" }), null);
 });

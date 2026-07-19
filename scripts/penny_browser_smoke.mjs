@@ -313,7 +313,7 @@ async function main() {
           listener: true,
           state: {
             profile: "daily",
-            model: "mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit",
+            model: "unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit",
           },
         }),
       }),

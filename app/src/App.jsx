@@ -59,7 +59,7 @@ function safeParseRuntime(stdout) {
 }
 
 const PUBLIC_RUNTIME_MODEL_LABELS = new Map([
-  ["mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit", "Gemma 4 26B-A4B: daily writing"],
+  ["unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit", "Gemma 4 26B-A4B: daily writing"],
   ["mlx-community/gemma-4-31B-it-qat-OptiQ-4bit", "Gemma 4 31B: quality review"],
 ]);
 

@@ -9,7 +9,7 @@ approved loopback chat-completions endpoint.
 
 | Profile | Model | Use in Penny | Generation settings |
 | --- | --- | --- | --- |
-| Daily | [Gemma 4 26B-A4B](https://huggingface.co/mlx-community/gemma-4-26B-A4B-it-qat-OptiQ-4bit) | Drafting, revision, and routine critique | 1,200 tokens, temperature 0.35, top-p 0.9 |
+| Daily | [Gemma 4 26B-A4B Unsloth UD MLX 4-bit](https://huggingface.co/unsloth/gemma-4-26b-a4b-it-UD-MLX-4bit), pinned to `ea6005b2a9b3dda91bcb26cb94a6ddf3a2eea4df` | Drafting, revision, and routine critique | 1,200 tokens, temperature 0.35, top-p 0.9 |
 | Quality | [Gemma 4 31B](https://huggingface.co/mlx-community/gemma-4-31B-it-qat-OptiQ-4bit) | A slower second-reader pass for deliberate review | 1,600 tokens, temperature 0.30, top-p 0.9 |
 
 The Daily model is a mixture-of-experts Gemma 4 model. The Quality model is a
