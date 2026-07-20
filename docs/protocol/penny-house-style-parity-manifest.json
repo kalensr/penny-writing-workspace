@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceRepo": "house-style-system",
-  "sourceCommit": "856b4a7acf241e3b6dc8312f5f92bde3816e4e0b",
+  "sourceCommit": "d5ffa216a5e3c3e23e61886f5cb0317ce2483d64",
   "sourceRootHint": "../house-style-system or HOUSE_STYLE_SYSTEM_DIR",
   "description": "Executable parity contract between canonical House Style System fixtures and Penny's deterministic style engine.",
   "cases": [
@@ -144,7 +144,9 @@
       "sha256": "7c7bdd79cc776b2ba36999c4f5f91ac2a6186003b319b9a1701f29cf85b7c2b7",
       "expectedSeverity": "minor",
       "expectedBehavior": "advisory",
-      "profileExceptions": ["raw-journal"]
+      "profileExceptions": [
+        "raw-journal"
+      ]
     },
     {
       "canonicalRuleId": "DramaticPunctuation.AbstractPunchline",
@@ -154,7 +156,9 @@
       "sha256": "6b3ac51475328bfc440c4e78ac2a664d00226990aadaded060f403015d5751bb",
       "expectedSeverity": "minor",
       "expectedBehavior": "advisory",
-      "profileExceptions": ["raw-journal"]
+      "profileExceptions": [
+        "raw-journal"
+      ]
     },
     {
       "canonicalRuleId": "DramaticPunctuation.FragmentEmphasis",
@@ -164,7 +168,9 @@
       "sha256": "5df38269ed7854feb5087f8820aa6ebd5d6a0d7734341ad92a38b44107994e7c",
       "expectedSeverity": "minor",
       "expectedBehavior": "advisory",
-      "profileExceptions": ["raw-journal"]
+      "profileExceptions": [
+        "raw-journal"
+      ]
     }
   ]
 }
