@@ -18,7 +18,7 @@ const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 test("Penny house-style parity manifest has stable contract metadata", () => {
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.sourceRepo, "house-style-system");
-  assert.equal(manifest.sourceCommit, "856b4a7acf241e3b6dc8312f5f92bde3816e4e0b");
+  assert.equal(manifest.sourceCommit, "d5ffa216a5e3c3e23e61886f5cb0317ce2483d64");
   assert.ok(manifest.sourceRootHint.includes("house-style-system"));
   assert.ok(Array.isArray(manifest.cases));
   assert.ok(manifest.cases.length >= 10);
